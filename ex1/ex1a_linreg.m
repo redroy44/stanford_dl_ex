@@ -61,6 +61,9 @@ tic;
 theta = minFunc(@linear_regression_vec, theta, options, train.X, train.y);
 fprintf('Optimization took %f seconds.\n', toc);
 
+average_error = grad_check(@linear_regression_vec, theta, 10, train.X, train.y)
+
+
 % Plot predicted prices and actual prices from training set.
 actual_prices = train.y;
 predicted_prices = theta'*train.X;
