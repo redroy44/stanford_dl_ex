@@ -25,9 +25,9 @@ ei.input_dim = 784;
 % number of output classes
 ei.output_dim = 10;
 % sizes of all hidden layers and the output layer
-ei.layer_sizes = [256, ei.output_dim]; % 256
+ei.layer_sizes = [256, 128, ei.output_dim]; % 256
 % scaling parameter for l2 weight regularization penalty
-ei.lambda = 0;
+ei.lambda = 10;
 % which type of activation function to use in hidden layers
 % feel free to implement support for only the logistic sigmoid function
 ei.activation_fun = 'logistic';
@@ -43,7 +43,9 @@ options.maxFunEvals = 1e6;
 options.Method = 'lbfgs';
 
 % Gradient check
-%average_error = grad_check(@supervised_dnn_cost, params, 10, ei, data_train, labels_train)
+% average_error = grad_check(@supervised_dnn_cost, params, 10, ei, data_train, labels_train)
+
+% return
 
 %% run training
 [opt_params,opt_value,exitflag,output] = minFunc(@supervised_dnn_cost,...
