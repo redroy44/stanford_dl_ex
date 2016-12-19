@@ -15,6 +15,7 @@ stack = params2stack(theta, ei);
 numHidden = numel(ei.layer_sizes) - 1;
 netSize = numel(ei.layer_sizes) + 1;
 hAct = cell(netSize, 1);
+deltaStack = cell(netSize, 1);
 gradStack = cell(numHidden+1, 1);
 %% forward prop
 %%% YOUR CODE HERE %%%
@@ -27,7 +28,6 @@ for i = 1:netSize-1
 end
 
 % softmax
-%[f,g] = softmax_regression(stack{end}.W, hAct{end}.a,labels)
 y = labels;
 c = 1:ei.output_dim;
 I = bsxfun(@eq, y, c)';
@@ -46,21 +46,36 @@ end;
 
 %% compute cost
 %%% YOUR CODE HERE %%%
-cost = -sum(sum(I.*log(h)));
+ceCost = -sum(sum(I.*log(h))); % + reg term
 
 %% compute gradients using backpropagation
 %%% YOUR CODE HERE %%%
-gradStack{end} = -(I - h);
+deltaStack{end} = -(I - h);
+
+for i = netSize-1:-1:1
+  deltaStack{i} = stack{i}.W'*deltaStack{i+1} .* grad_sigmoid(hAct{i}.z);
+end
+
+for i = 2:numHidden+1
+  gradStack{i}.W = deltaStack{i+1} * hAct{i}.a';
+  gradStack{i}.b = deltaStack{i+1};
+end
+
 
 %% compute weight penalty cost and gradient for non-bias terms
 %%% YOUR CODE HERE %%%
-pred_prob = 0;
+pCost = 0;
+for i = 1:netSize-1
+  pCost = pCost + ei.lambda*sum(sum(stack{i}.W));
+end
+
 
 
 %% reshape gradients into vector
-%[grad] = stack2params(gradStack);
+[grad] = stack2params(gradStack);
+pred_prob = 0;
+cost = ceCost + pCost;
 
-grad = theta;
 end
 
 
