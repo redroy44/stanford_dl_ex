@@ -27,15 +27,19 @@ end;
 
 %% compute cost
 %%% YOUR CODE HERE %%%
-
+cost = 1000000;
 %% compute gradients using backpropagation
 %%% YOUR CODE HERE %%%
 
 %% compute weight penalty cost and gradient for non-bias terms
 %%% YOUR CODE HERE %%%
+pred_prob = 0;
+
 
 %% reshape gradients into vector
-[grad] = stack2params(gradStack);
+%[grad] = stack2params(gradStack);
+
+grad = theta;
 end
 
 

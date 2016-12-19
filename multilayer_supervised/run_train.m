@@ -42,6 +42,10 @@ options.display = 'iter';
 options.maxFunEvals = 1e6;
 options.Method = 'lbfgs';
 
+% Gradient check
+average_error = grad_check(@supervised_dnn_cost, params, 10, ei, data_train, labels_train)
+pause;
+
 %% run training
 [opt_params,opt_value,exitflag,output] = minFunc(@supervised_dnn_cost,...
     params,options,ei, data_train, labels_train);
