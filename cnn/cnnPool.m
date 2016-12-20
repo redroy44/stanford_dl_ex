@@ -37,10 +37,10 @@ for imageNum = 1:numImages
     
     cf = squeeze(convolvedFeatures(:, :, imageNum));
     
-    pooledImage = conv2(cf, filter, 'valid');
-    pooledImage = pooledImage(1:poolDim:convolvedDim, 1:poolDim:convolvedDim);
+    pooledConv = conv2(cf, filter, 'valid');
+    pooledConv = pooledConv(1:poolDim:convolvedDim, 1:poolDim:convolvedDim);
     
-    pooledFeatures(:, :, filterNum, imageNum) = pooledImage;
+    pooledFeatures(:, :, filterNum, imageNum) = pooledConv;
   end
 end
 

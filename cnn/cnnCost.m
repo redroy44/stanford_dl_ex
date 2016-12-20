@@ -71,7 +71,36 @@ activations = zeros(convDim,convDim,numFilters,numImages);
 % subsampled activations
 activationsPooled = zeros(outputDim,outputDim,numFilters,numImages);
 
+convolvedFeatures = zeros(convDim, convDim, numFilters, numImages);
+pooledFeatures = zeros(convDim / poolDim, ...
+        convDim / poolDim, numFilters, numImages);
+
 %%% YOUR CODE HERE %%%
+for imageNum = 1:numImages
+  for filterNum = 1:numFilters
+    
+    % convolution
+    convolvedImage = zeros(convDim, convDim);
+    filter = Wc(:, :, filterNum);
+    filter = rot90(squeeze(filter),2);
+    im = squeeze(images(:, :, imageNum));
+    convolvedImage = conv2(im,filter, 'valid');
+    activations(:, :, filterNum, imageNum) = convolvedImage + bc(filterNum);
+    convolvedImage = sigmoid(activations(:, :, filterNum, imageNum));
+    convolvedFeatures(:, :, filterNum, imageNum) = convolvedImage;
+              
+    % pooling
+    filter = (1/(poolDim.^2)).*ones(poolDim);
+    
+    cf = squeeze(convolvedFeatures(:, :, imageNum));
+    
+    pooledConv = conv2(cf, filter, 'valid');
+    pooledConv = pooledConv(1:poolDim:convDim, 1:poolDim:convDim);
+    
+    pooledFeatures(:, :, filterNum, imageNum) = pooledConv;
+  end
+end
+activationsPooled = pooledFeatures;
 
 % Reshape activations into 2-d matrix, hiddenSize x numImages,
 % for Softmax layer
@@ -88,6 +117,12 @@ activationsPooled = reshape(activationsPooled,[],numImages);
 probs = zeros(numClasses,numImages);
 
 %%% YOUR CODE HERE %%%
+h = exp(Wd*activationsPooled+repmat(bd, 1, numImages));
+h_sum = sum(h, 1);
+h_sum = repmat(h_sum, numClasses, 1);
+h = h ./ h_sum;
+
+probs = h;
 
 %%======================================================================
 %% STEP 1b: Calculate Cost
@@ -97,7 +132,7 @@ probs = zeros(numClasses,numImages);
 
 cost = 0; % save objective into cost
 
-%%% YOUR CODE HERE %%%
+
 
 % Makes predictions given probs and returns without backproagating errors.
 if pred
@@ -106,6 +141,12 @@ if pred
     grad = 0;
     return;
 end;
+
+%%% YOUR CODE HERE %%%
+y = labels;
+c = 1:numClasses;
+I = bsxfun(@eq, y, c)';
+cost = -sum(sum(I.*log(h))); % + reg term?
 
 %%======================================================================
 %% STEP 1c: Backpropagation
