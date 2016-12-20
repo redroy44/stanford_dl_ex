@@ -72,7 +72,7 @@ if DEBUG
         'Difference too large. Check your gradient computation again');
     
 end;
-
+return
 %%======================================================================
 %% STEP 3: Learn Parameters
 %  Implement minFuncSGD.m, then train the model.

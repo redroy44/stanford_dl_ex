@@ -159,6 +159,20 @@ cost = -sum(sum(I.*log(h))); % + reg term?
 %  quickly.
 
 %%% YOUR CODE HERE %%%
+delta = -(I - h);
+
+delta_p = zeros([20,20,2,10]);
+delta_c = zeros(size(activations));
+
+delta1 = reshape(Wd'*delta, outputDim,outputDim,filterNum,numImages);
+
+for i = 1:numFilters
+  for j = 1:numImages
+    delta_p(:,:,i, j) = (1/poolDim^2) * kron(delta1(:,:,i,j),ones(poolDim));
+
+    delta_c(:,:,i, j) = delta_p(:,:,i, j) .* grad_sigmoid(activations(:,:,i, j));
+  end
+end
 
 %%======================================================================
 %% STEP 1d: Gradient Calculation
@@ -169,6 +183,27 @@ cost = -sum(sum(I.*log(h))); % + reg term?
 %  for that filter with each image and aggregate over images.
 
 %%% YOUR CODE HERE %%%
+
+Wd_grad = delta * activationsPooled';
+bd_grad = sum(delta, 2);
+
+for i = 1:numFilters
+  convolvedError = zeros(convDim, convDim);
+  for j = 1:numImages
+    
+    filter = delta_c(:,:,i,j);
+    filter = rot90(squeeze(filter),2);
+    im = squeeze(images(:, :, j));
+    uu = conv2(im,filter, 'valid');
+    convolvedError = conv2(im,filter, 'valid');
+
+    Wc_grad(:,:,i) = Wc_grad(:,:,i) + convolvedError;
+
+    bc_grad(i) = bc_grad(i) + sum(sum(delta_c(:,:,i,j)));
+  end
+end
+
+
 
 %% Unroll gradient into grad vector for minFunc
 grad = [Wc_grad(:) ; Wd_grad(:) ; bc_grad(:) ; bd_grad(:)];
