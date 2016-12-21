@@ -70,7 +70,8 @@ for e = 1:epochs
         velocity = mom.*velocity + alpha.*grad;
         theta = theta - velocity;
         
-        fprintf('Epoch %d: Cost on iteration %d is %f\n',e,it,cost);
+        fprintf('Epoch %d: Cost on iteration %d batch %d/%d is %f\n',e,it,s,(m-minibatch+1),cost);
+        fflush(stdout);
     end;
 
     % aneal learning rate by factor of two after each epoch
