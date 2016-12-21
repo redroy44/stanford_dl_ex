@@ -33,9 +33,10 @@ pooledFeatures = zeros(convolvedDim / poolDim, ...
 for imageNum = 1:numImages
   for filterNum = 1:numFilters
     
-    filter = (1/(poolDim.^2)).*ones(poolDim);
-    
-    cf = squeeze(convolvedFeatures(:, :, imageNum));
+    filter = 1/poolDim^2*ones(poolDim);
+    % why the difference?
+    % squeeze(convolvedFeatures(:, :,imageNum));
+    cf = convolvedFeatures(:, :,filterNum , imageNum);
     
     pooledConv = conv2(cf, filter, 'valid');
     pooledConv = pooledConv(1:poolDim:convolvedDim, 1:poolDim:convolvedDim);
