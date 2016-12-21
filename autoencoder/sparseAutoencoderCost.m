@@ -26,6 +26,8 @@ W2grad = zeros(size(W2));
 b1grad = zeros(size(b1)); 
 b2grad = zeros(size(b2));
 
+m = size(data, 2);
+
 %% ---------- YOUR CODE HERE --------------------------------------
 %  Instructions: Compute the cost/optimization objective J_sparse(W,b) for the Sparse Autoencoder,
 %                and the corresponding gradients W1grad, W2grad, b1grad, b2grad.
@@ -42,22 +44,31 @@ b2grad = zeros(size(b2));
 % the gradient descent update to W1 would be W1 := W1 - alpha * W1grad, and similarly for W2, b1, b2. 
 % 
 
+% forward
+z2 = bsxfun(@plus, W1*data,b1);
+a2 = sigmoid(z2);
+z3 = bsxfun(@plus, W2*a2,b2);
+p_hat = sigmoid(z3);
 
 
 
+%p_hat = 1/m * sum(p_hat, 2);
+%cost
 
+costSq = 1/m * sum(sum(0.5.*(p_hat - data).^2, 2));
+%costP = sparsityParam*log(sparsityParam./p_hat) + ...
+%        (1-sparsityParam)*log((1-sparsityParam)./(1-p_hat));
+        
+cost = costSq;
 
+% backward
+delta3 = -(p_hat - data).* grad_sigmoid(z3);
+delta2 = (W1*delta3) .* grad_sigmoid(z2);
 
-
-
-
-
-
-
-
-
-
-
+W1grad = delta2*data'; 
+W2grad = delta3*a2';
+b1grad = sum(delta2, 2);
+b2grad = sum(delta3, 2);
 
 
 %-------------------------------------------------------------------
@@ -68,14 +79,3 @@ b2grad = zeros(size(b2));
 grad = [W1grad(:) ; W2grad(:) ; b1grad(:) ; b2grad(:)];
 
 end
-
-%-------------------------------------------------------------------
-% Here's an implementation of the sigmoid function, which you may find useful
-% in your computation of the costs and the gradients.  This inputs a (row or
-% column) vector (say (z1, z2, z3)) and returns (f(z1), f(z2), f(z3)). 
-
-function sigm = sigmoid(x)
-  
-    sigm = 1 ./ (1 + exp(-x));
-end
-

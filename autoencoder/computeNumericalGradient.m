@@ -18,12 +18,20 @@ numgrad = zeros(size(theta));
 %                
 % Hint: You will probably want to compute the elements of numgrad one at a time. 
 
+epsilon = 1e-4;
 
-
-
-
-
-
+for i =1:length(numgrad)
+    oldT = theta(i);
+    theta(i)=oldT+epsilon;
+    pos = J(theta);
+    theta(i)=oldT-epsilon;
+    neg = J(theta);
+    numgrad(i) = (pos-neg)/(2*epsilon);
+    theta(i)=oldT;
+    if mod(i,100)==0
+       fprintf('Done with %d\n',i);
+    end;
+end;
 
 %% ---------------------------------------------------------------
 end
