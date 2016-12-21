@@ -10,7 +10,7 @@ numpatches = 10000;
 % Initialize patches with zeros.  Your code will fill in this matrix--one
 % column per patch, 10000 columns. 
 patches = zeros(patchsize*patchsize, numpatches);
-
+tic
 %% ---------- YOUR CODE HERE --------------------------------------
 %  Instructions: Fill in the variable called "patches" using data 
 %  from IMAGES.  
@@ -24,13 +24,17 @@ patches = zeros(patchsize*patchsize, numpatches);
 %  patch corresponding to the pixels in the block (21,21) to (30,30) of
 %  Image 1
 
+[dimXImage, dimYImage, numImages] = size(IMAGES);
 
-
-
-
-
-
-
+for i = 1: numpatches
+  randImage = randi(numImages);
+  if dimXImage == dimYImage
+    randIndex = randi(dimYImage - patchsize + 1);
+    randPatch = IMAGES(randIndex:randIndex+patchsize-1, ...
+                       randIndex:randIndex+patchsize-1, randImage);
+  end
+  patches(:,i) = randPatch(:);
+end
 
 
 %% ---------------------------------------------------------------
@@ -39,7 +43,7 @@ patches = zeros(patchsize*patchsize, numpatches);
 % (due to the sigmoid activation function), we have to make sure 
 % the range of pixel values is also bounded between [0,1]
 patches = normalizeData(patches);
-
+toc
 end
 
 
