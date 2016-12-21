@@ -119,7 +119,7 @@ y = labels;
 c = 1:numClasses;
 I = bsxfun(@eq, y, c)';
 
-cost = -sum(sum(I.*log(probs))); % + reg term?
+cost = -1/numImages*sum(sum(I.*log(probs))); % + reg term?
 
 %%======================================================================
 %% STEP 1c: Backpropagation
@@ -175,5 +175,7 @@ end
 
 %% Unroll gradient into grad vector for minFunc
 grad = [Wc_grad(:) ; Wd_grad(:) ; bc_grad(:) ; bd_grad(:)];
+
+grad = 1/numImages*grad;
 
 end
