@@ -50,8 +50,6 @@ a2 = sigmoid(z2);
 z3 = bsxfun(@plus, W2*a2,b2);
 p_hat = sigmoid(z3);
 
-
-
 %p_hat = 1/m * sum(p_hat, 2);
 %cost
 
@@ -62,13 +60,13 @@ costSq = 1/m * sum(sum(0.5.*(p_hat - data).^2, 2));
 cost = costSq;
 
 % backward
-delta3 = -(p_hat - data).* grad_sigmoid(z3);
-delta2 = (W1*delta3) .* grad_sigmoid(z2);
+delta3 = -(data - p_hat).* grad_sigmoid(p_hat);
+delta2 = (W2'*delta3) .* grad_sigmoid(a2);
 
-W1grad = delta2*data'; 
-W2grad = delta3*a2';
-b1grad = sum(delta2, 2);
-b2grad = sum(delta3, 2);
+W1grad = 1/m * delta2*data'; 
+W2grad = 1/m * delta3*a2'; % ok
+b1grad = 1/m * sum(delta2, 2);
+b2grad = 1/m * sum(delta3, 2); % ok
 
 
 %-------------------------------------------------------------------
