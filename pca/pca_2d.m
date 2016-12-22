@@ -8,6 +8,12 @@ close all
 %  You do not need to change the code below.
 
 x = load('pcaData.txt','-ascii');
+m = size(x,2);
+
+% mean removal
+% avg = mean(x, 2);     % Compute the mean pixel intensity value separately for each patch. 
+% x = x - repmat(avg, 1,size(x, 2));
+
 figure(1);
 scatter(x(1, :), x(2, :));
 title('Raw data');
@@ -20,7 +26,8 @@ title('Raw data');
 
 % -------------------- YOUR CODE HERE -------------------- 
 u = zeros(size(x, 1)); % You need to compute this
-
+sigma = 1/m * x*x';
+[u,s,v] = svd(sigma);
 
 % -------------------------------------------------------- 
 hold on
@@ -37,7 +44,7 @@ hold off
 % -------------------- YOUR CODE HERE -------------------- 
 xRot = zeros(size(x)); % You need to compute this
 
-
+xRot = u'*x;
 % -------------------------------------------------------- 
 
 % Visualise the covariance matrix. You should see a line across the
@@ -56,6 +63,8 @@ title('xRot');
 k = 1; % Use k = 1 and project the data onto the first eigenbasis
 xHat = zeros(size(x)); % You need to compute this
 
+xTilde = u(:,1:k)' * x;
+xHat = u'*[xTilde; zeros(1,m)];
 
 
 % -------------------------------------------------------- 
@@ -72,7 +81,7 @@ epsilon = 1e-5;
 % -------------------- YOUR CODE HERE -------------------- 
 xPCAWhite = zeros(size(x)); % You need to compute this
 
-
+xPCAWhite = diag(1./sqrt(diag(s) + epsilon)) * xRot;
 
 
 % -------------------------------------------------------- 
@@ -87,6 +96,7 @@ title('xPCAWhite');
 % -------------------- YOUR CODE HERE -------------------- 
 xZCAWhite = zeros(size(x)); % You need to compute this
 
+xZCAWhite = u * diag(1./sqrt(diag(s) + epsilon)) * u' * x;
 
 % -------------------------------------------------------- 
 figure(5);
