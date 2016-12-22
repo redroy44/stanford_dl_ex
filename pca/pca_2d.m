@@ -96,7 +96,7 @@ title('xPCAWhite');
 % -------------------- YOUR CODE HERE -------------------- 
 xZCAWhite = zeros(size(x)); % You need to compute this
 
-xZCAWhite = u * diag(1./sqrt(diag(s) + epsilon)) * u' * x;
+xZCAWhite = u * diag(1./sqrt(diag(s) + epsilon)) * xRot;
 
 % -------------------------------------------------------- 
 figure(5);
