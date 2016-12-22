@@ -48,25 +48,30 @@ m = size(data, 2);
 z2 = bsxfun(@plus, W1*data,b1);
 a2 = sigmoid(z2);
 z3 = bsxfun(@plus, W2*a2,b2);
-p_hat = sigmoid(z3);
+a3 = sigmoid(z3);
 
-%p_hat = 1/m * sum(p_hat, 2);
-%cost
+p_hat = 1/m * sum(a2, 2);
 
-costSq = 1/m * sum(sum(0.5.*(p_hat - data).^2, 2));
-%costP = sparsityParam*log(sparsityParam./p_hat) + ...
-%        (1-sparsityParam)*log((1-sparsityParam)./(1-p_hat));
+
+costSq = 1/m * sum(sum(0.5.*(a3 - data).^2, 2));
+
+costP = sparsityParam*log(sparsityParam./p_hat) + ...
+        (1-sparsityParam)*log((1-sparsityParam)./(1-p_hat));
+costP = beta * sum(costP);
         
-cost = costSq;
+costR = lambda/2*(sum(sum(W1.^2)) + sum(sum(W2.^2)));
+
+cost = costSq + costR + costP;
 
 % backward
-delta3 = -(data - p_hat).* grad_sigmoid(p_hat);
-delta2 = (W2'*delta3) .* grad_sigmoid(a2);
+kl = beta * (-sparsityParam./p_hat + ((1-sparsityParam)./(1-p_hat)));
+delta3 = -(data - a3).* grad_sigmoid(a3);
+delta2 = (W2'*delta3 + repmat(kl, 1, m)) .* grad_sigmoid(a2);
 
-W1grad = 1/m * delta2*data'; 
-W2grad = 1/m * delta3*a2'; % ok
+W1grad = 1/m * delta2*data' + lambda.*W1; 
+W2grad = 1/m * delta3*a2' + lambda.*W2;
 b1grad = 1/m * sum(delta2, 2);
-b2grad = 1/m * sum(delta3, 2); % ok
+b2grad = 1/m * sum(delta3, 2);
 
 
 %-------------------------------------------------------------------
