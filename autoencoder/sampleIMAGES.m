@@ -5,12 +5,11 @@ function patches = sampleIMAGES()
 load IMAGES;    % load images from disk 
 
 patchsize = 8;  % we'll use 8x8 patches 
-numpatches = 100;
+numpatches = 10000;
 
 % Initialize patches with zeros.  Your code will fill in this matrix--one
 % column per patch, 10000 columns. 
 patches = zeros(patchsize*patchsize, numpatches);
-tic
 %% ---------- YOUR CODE HERE --------------------------------------
 %  Instructions: Fill in the variable called "patches" using data 
 %  from IMAGES.  
@@ -43,7 +42,6 @@ end
 % (due to the sigmoid activation function), we have to make sure 
 % the range of pixel values is also bounded between [0,1]
 patches = normalizeData(patches);
-toc
 end
 
 
