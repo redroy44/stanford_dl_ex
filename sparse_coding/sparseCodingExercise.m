@@ -10,6 +10,8 @@
 
 % Add the paths to your earlier exercises if necessary
 % addpath /path/to/solution
+addpath(genpath('../common'))
+addpath(genpath('../autoencoder'))
 
 %%======================================================================
 %% STEP 0: Initialization
@@ -37,7 +39,7 @@ images = load('IMAGES.mat');
 images = images.IMAGES;
 
 patches = sampleIMAGES(images, patchDim, numPatches);
-display_network(patches(:, 1:64));
+%display_network(patches(:, 1:64));
 
 %%======================================================================
 %% STEP 2: Implement and check sparse coding cost functions
@@ -64,11 +66,11 @@ featureMatrix = randn(numFeatures, numPatches) * 0.005;
 
 numgrad = computeNumericalGradient( @(x) sparseCodingWeightCost(x, featureMatrix, visibleSize, numFeatures, patches, gamma, lambda, epsilon), weightMatrix(:) );
 % Uncomment the blow line to display the numerical and analytic gradients side by side
-% disp([numgrad grad]);     
+disp([numgrad grad]);     
 diff = norm(numgrad-grad)/norm(numgrad+grad);
 fprintf('Weight difference: %g\n', diff);
 assert(diff < 1e-8, 'Weight difference too large. Check your weight cost function. ');
-
+return
 %% STEP 2b: Implement and test feature cost (non-topographic)
 %  Implement sparseCodingFeatureCost in sparseCodingFeatureCost.m and check
 %  the gradient. You may wish to implement the non-topographic version of
@@ -85,11 +87,11 @@ groupMatrix = eye(numFeatures);
 
 numgrad = computeNumericalGradient( @(x) sparseCodingFeatureCost(weightMatrix, x, visibleSize, numFeatures, patches, gamma, lambda, epsilon, groupMatrix), featureMatrix(:) );
 % Uncomment the blow line to display the numerical and analytic gradients side by side
-% disp([numgrad grad]); 
+disp([numgrad grad]); 
 diff = norm(numgrad-grad)/norm(numgrad+grad);
 fprintf('Feature difference (non-topographic): %g\n', diff);
 assert(diff < 1e-8, 'Feature difference too large. Check your feature cost function. ');
-
+return
 %% STEP 2c: Implement and test feature cost (topographic)
 %  Implement sparseCodingFeatureCost in sparseCodingFeatureCost.m and check
 %  the gradient. This time, we will pass a random grouping matrix in to
