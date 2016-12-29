@@ -87,7 +87,7 @@ groupMatrix = eye(numFeatures);
 
 numgrad = computeNumericalGradient( @(x) sparseCodingFeatureCost(weightMatrix, x, visibleSize, numFeatures, patches, gamma, lambda, epsilon, groupMatrix), featureMatrix(:) );
 % Uncomment the blow line to display the numerical and analytic gradients side by side
-disp([numgrad grad]); 
+% disp([numgrad grad]); 
 diff = norm(numgrad-grad)/norm(numgrad+grad);
 fprintf('Feature difference (non-topographic): %g\n', diff);
 assert(diff < 1e-8, 'Feature difference too large. Check your feature cost function. ');

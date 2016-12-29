@@ -52,10 +52,7 @@ function [cost, grad] = sparseCodingFeatureCost(weightMatrix, featureMatrix, vis
     cost = costSq + costSp;
     
     grad = 2*weightMatrix'*(weightMatrix*featureMatrix - patches); % feature matrix grad
-    grad = grad ./ numExamples;
-    
     grad = grad + lambda * rdivide(featureMatrix,sparsityMatrix);
-    
-    grad = grad(:);
+    grad = grad(:) ./ numExamples;
     
 end
