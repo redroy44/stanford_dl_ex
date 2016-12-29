@@ -37,28 +37,18 @@ function [cost, grad] = sparseCodingWeightCost(weightMatrix, featureMatrix, visi
     
     cost = 0;
     costSq = 0;
-    costSp = 0;
     costR = 0;
     grad = zeros(size(weightMatrix));
 
     delta = weightMatrix * featureMatrix - patches;
     
-    costSq = mean(sum(delta.^2, 1)); % average sum-of-squares error term
-    costR = gamma * sum(sum(weightMatrix.^2));
+    costSq = trace(delta' * delta) ./ numExamples;
+    costR = gamma * trace(weightMatrix' * weightMatrix);
     cost = costSq + costR;
 
-    grad = 2*weightMatrix*featureMatrix*featureMatrix' - 2*patches*featureMatrix';
+    grad = 2*delta*featureMatrix';
     grad = grad ./ numExamples;
     grad = grad + 2 * gamma * weightMatrix;
-    grad = grad(:);
-    
-% aaa
-    T = weightMatrix * featureMatrix - patches;
-    
-    cost = trace(T' * T)./numExamples + ...
-         gamma * trace(weightMatrix' * weightMatrix);
-    grad = (2*T *featureMatrix')./numExamples + 2*gamma*weightMatrix;
-
     grad = grad(:);
 
 end

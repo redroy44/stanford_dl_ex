@@ -114,8 +114,9 @@ numgrad = computeNumericalGradient( @(x) sparseCodingFeatureCost(weightMatrix, x
 % disp([numgrad grad]); 
 diff = norm(numgrad-grad)/norm(numgrad+grad);
 fprintf('Feature difference (topographic): %g\n', diff);
-%assert(diff < 1e-8, 'Feature difference too large. Check your feature cost function. ');
+assert(diff < 1e-8, 'Feature difference too large. Check your feature cost function. ');
 
+return
 end
 
 %%======================================================================
@@ -182,7 +183,7 @@ for iteration = 1:200
     fWeight = gamma * sum(weightMatrix(:) .^ 2);
     
     fprintf('  %4d  %10.4f  %10.4f  %10.4f  %10.4f\n', iteration, fResidue+fSparsity+fWeight, fResidue, fSparsity, fWeight)
-    fflush(stdout);           
+    
     % Select a new batch
     indices = randperm(numPatches);
     indices = indices(1:batchNumPatches);
@@ -194,15 +195,15 @@ for iteration = 1:200
     featureMatrix = bsxfun(@rdivide, featureMatrix, normWM); 
     
     % Optimize for feature matrix    
-    options.maxIter = 40;
+    options.maxIter = 20;
     [featureMatrix, cost] = minFunc( @(x) sparseCodingFeatureCost(weightMatrix, x, visibleSize, numFeatures, batchPatches, gamma, lambda, epsilon, groupMatrix), ...
                                            featureMatrix(:), options);
     featureMatrix = reshape(featureMatrix, numFeatures, batchNumPatches);                                      
        
     % Optimize for weight matrix   
-    %options.maxIter = 40;
+    %options.maxIter = 20;
     %[weightMatrix, cost] = minFunc( @(x) sparseCodingWeightCost(x, featureMatrix, visibleSize, numFeatures, batchPatches, gamma, lambda, epsilon, groupMatrix), ...
-    %                                       weightMatrix(:), options);
+                                           weightMatrix(:), options);
     %weightMatrix = reshape(weightMatrix, visibleSize, numFeatures); 
     weightMatrix = zeros(visibleSize, numFeatures);     
     % -------------------- YOUR CODE HERE --------------------
