@@ -12,6 +12,13 @@ params.lambda = 0.0005; % sparsity cost
 params.numFeatures = 50; % number of filter banks to learn
 params.epsilon = 1e-2; % epsilon to use in square-sqrt nonlinearity
 
+DEBUG = false;
+if DEBUG
+params.m=1000; % num patches
+params.numFeatures = 10; % number of filter banks to learn
+params.patchWidth=9; % width of a patch
+params.n=params.patchWidth^2; % dimensionality of input to RICA
+end
 % Load MNIST data set
 data = loadMNISTImages('../common/train-images-idx3-ubyte');
 
@@ -34,13 +41,26 @@ x = bsxfunwrap(@rdivide,patches,m);
 options.Method = 'lbfgs';
 options.MaxFunEvals = Inf;
 options.MaxIter = 500;
-%options.display = 'off';
+options.Display = 'iter';
+options.DerivativeCheck = 'off'; 
 options.outputFcn = @showBases;
 
 % initialize with random weights
 randTheta = randn(params.numFeatures,params.n)*0.01; % 1/sqrt(params.n);
 randTheta = randTheta ./ repmat(sqrt(sum(randTheta.^2,2)), 1, size(randTheta,2));
 randTheta = randTheta(:);
+
+
+if DEBUG
+[cost, grad] = softICACost(randTheta, x, params);
+
+numgrad = computeNumericalGradient( @(theta) softICACost(theta, x, params), randTheta );
+% Uncomment the blow line to display the numerical and analytic gradients side by side
+disp([numgrad grad]); 
+diff = norm(numgrad-grad)/norm(numgrad+grad);
+fprintf('Gradient difference: %g\n', diff);
+return
+end
 
 % optimize
 [opttheta, cost, exitflag] = minFunc( @(theta) softICACost(theta, x, params), randTheta, options); % Use x or xw
