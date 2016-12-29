@@ -182,7 +182,7 @@ for iteration = 1:200
     fWeight = gamma * sum(weightMatrix(:) .^ 2);
     
     fprintf('  %4d  %10.4f  %10.4f  %10.4f  %10.4f\n', iteration, fResidue+fSparsity+fWeight, fResidue, fSparsity, fWeight)
-               
+    fflush(stdout);           
     % Select a new batch
     indices = randperm(numPatches);
     indices = indices(1:batchNumPatches);
@@ -194,12 +194,16 @@ for iteration = 1:200
     featureMatrix = bsxfun(@rdivide, featureMatrix, normWM); 
     
     % Optimize for feature matrix    
-    options.maxIter = 20;
+    options.maxIter = 40;
     [featureMatrix, cost] = minFunc( @(x) sparseCodingFeatureCost(weightMatrix, x, visibleSize, numFeatures, batchPatches, gamma, lambda, epsilon, groupMatrix), ...
                                            featureMatrix(:), options);
     featureMatrix = reshape(featureMatrix, numFeatures, batchNumPatches);                                      
        
-    % Optimize for weight matrix  
+    % Optimize for weight matrix   
+    %options.maxIter = 40;
+    %[weightMatrix, cost] = minFunc( @(x) sparseCodingWeightCost(x, featureMatrix, visibleSize, numFeatures, batchPatches, gamma, lambda, epsilon, groupMatrix), ...
+    %                                       weightMatrix(:), options);
+    %weightMatrix = reshape(weightMatrix, visibleSize, numFeatures); 
     weightMatrix = zeros(visibleSize, numFeatures);     
     % -------------------- YOUR CODE HERE --------------------
     % Instructions:
@@ -210,7 +214,7 @@ for iteration = 1:200
     %   Once you have verified that your closed form solution is correct,
     %   you should comment out the checking code before running the
     %   optimization.
-    
+    weightMatrix = (batchPatches*featureMatrix')/(gamma*batchNumPatches*eye(size(featureMatrix,1))+featureMatrix*featureMatrix');
     %[cost, grad] = sparseCodingWeightCost(weightMatrix, featureMatrix, visibleSize, numFeatures, batchPatches, gamma, lambda, epsilon, groupMatrix);
     %assert(norm(grad) < 1e-12, 'Weight gradient should be close to 0. Check your closed form solution for weightMatrix again.')
     %error('Weight gradient is okay. Comment out checking code before running optimization.');

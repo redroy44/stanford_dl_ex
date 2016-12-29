@@ -55,4 +55,15 @@ function [cost, grad] = sparseCodingFeatureCost(weightMatrix, featureMatrix, vis
     grad = grad + lambda * rdivide(featureMatrix,sparsityMatrix);
     grad = grad(:) ./ numExamples;
     
+    
+    % aaaa
+     T = weightMatrix * featureMatrix - patches;
+     sparsityMatrix = sqrt(groupMatrix*(featureMatrix.^2)+epsilon);
+     cost = trace(T' * T)./numExamples + ...
+         lambda*sum(sparsityMatrix(:));
+     
+     grad = 2 * weightMatrix' * T ./ numExamples + ...
+          lambda*groupMatrix'*(groupMatrix*(featureMatrix.^2)+epsilon).^(-0.5).*featureMatrix;
+     grad = grad(:);
+    
 end
