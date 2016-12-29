@@ -12,7 +12,7 @@
 % addpath /path/to/solution
 addpath(genpath('../common'))
 addpath(genpath('../autoencoder'))
-
+rand('seed', 1);
 %%======================================================================
 %% STEP 0: Initialization
 %  Here we initialize some parameters used for the exercise.
@@ -66,11 +66,11 @@ featureMatrix = randn(numFeatures, numPatches) * 0.005;
 
 numgrad = computeNumericalGradient( @(x) sparseCodingWeightCost(x, featureMatrix, visibleSize, numFeatures, patches, gamma, lambda, epsilon), weightMatrix(:) );
 % Uncomment the blow line to display the numerical and analytic gradients side by side
-disp([numgrad grad]);     
+% disp([numgrad grad]);     
 diff = norm(numgrad-grad)/norm(numgrad+grad);
 fprintf('Weight difference: %g\n', diff);
 assert(diff < 1e-8, 'Weight difference too large. Check your weight cost function. ');
-return
+
 %% STEP 2b: Implement and test feature cost (non-topographic)
 %  Implement sparseCodingFeatureCost in sparseCodingFeatureCost.m and check
 %  the gradient. You may wish to implement the non-topographic version of

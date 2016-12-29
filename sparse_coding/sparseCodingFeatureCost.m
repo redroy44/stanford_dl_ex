@@ -44,27 +44,17 @@ function [cost, grad] = sparseCodingFeatureCost(weightMatrix, featureMatrix, vis
     costR = 0;
     grad = zeros(size(weightMatrix));
 
-    %h = weightMatrix' * patches;
-    
     delta = weightMatrix * featureMatrix - patches;
     
-    costSq = mean(sum(delta.^2, 2)); % average sum-of-squares error term
+    costSq = mean(sum(delta.^2.0, 1)); % average sum-of-squares error term
+    sparsityMatrix = sqrt(featureMatrix.^2.0 + epsilon);
+    costSp = lambda * mean(sum(sparsityMatrix, 1));
+    cost = costSq + costSp;
     
-    % costSp = lambda * sum(mean(sqrt(featureMatrix.^2 + epsilon)));
+    grad = 2*weightMatrix'*(weightMatrix*featureMatrix - patches); % feature matrix grad
+    grad = grad ./ numExamples;
     
-    costR = gamma * sum(sum(weightMatrix.^2));
-    
-    cost = costSq;% + costSp + costR;
-    
-    %gradient
-    delta3 = 2*(delta);
-    delta2 = eye(visibleSize)' * delta3;
-    delta1 = weightMatrix' * delta2;
-    
-    
-    grad1 = weightMatrix'*2*(weightMatrix * featureMatrix - patches);
-    
-    grad = delta1;% + gamma * weightMatrix;
+    grad = grad + lambda * rdivide(featureMatrix,sparsityMatrix);
     
     grad = grad(:);
     
