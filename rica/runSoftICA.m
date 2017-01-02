@@ -31,7 +31,7 @@ data = loadMNISTImages('../common/train-images-idx3-ubyte');
 % Step 1) Sample patches
 patches = samplePatches(data,params.patchWidth,params.m);
 % Step 2) Apply ZCA
-patches = zca2(patches);
+[patches, U, S] = zca2(patches);
 % Step 3) Normalize each patch. Each patch should be normalized as
 % x / ||x||_2 where x is the vector representation of the patch
 m = sqrt(sum(patches.^2) + (1e-8));
